@@ -24,6 +24,7 @@ class _TestViewState extends BaseState<TestView> {
     return BaseView<TestViewModel>(
       viewModel: TestViewModel(),
       onModelReady: (model) {
+        model.setContext(context);
         viewModel = model;
       },
       onPageBuilder: (context, value) => scaffoldBody,
@@ -31,63 +32,51 @@ class _TestViewState extends BaseState<TestView> {
   }
 
   Widget get scaffoldBody => Scaffold(
-        appBar: AppBar(
-          leading: Text(
-              LocaleManager.instance.getStringValue(PreferencesKeys.TOKEN)),
-          title: const TextWelcomeWidget(),
-          actions: [IconButtonChangeTheme(context: context)],
-        ),
-        floatingActionButton: floatingActionButtonNumber,
-        body: Column(
-          children: [
-            Center(
-              child: textNumber,
-            ),
-          ],
-        ),
+        appBar: appBar(),
+        floatingActionButton: floatingActionButtonNumberIncrement,
+        body: textNumber,
       );
 
-  Widget get textNumber {
-    return Observer(
-      builder: (context) => Text(
-        viewModel.number.toString(),
-      ),
+  AppBar appBar() {
+    return AppBar(
+      leading:
+          Text(LocaleManager.instance.getStringValue(PreferencesKeys.TOKEN)),
+      title: textWelcomeWidget(),
+      actions: [iconButtonChangeTheme()],
     );
   }
 
-  FloatingActionButton get floatingActionButtonNumber {
+  IconButton iconButtonChangeTheme() {
+    return IconButton(
+        icon: Icon(Icons.change_history),
+        onPressed: () {
+          context.setLocale(LanguageManager.instance!.enLocale);
+        });
+  }
+
+  Widget get textNumber {
+    return Column(
+      children: [
+        Observer(
+          builder: (context) => Text(
+            viewModel.number.toString(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Text textWelcomeWidget() => Text(LocaleKeys.welcome.locale);
+
+  FloatingActionButton get floatingActionButtonNumberIncrement {
     return FloatingActionButton(
       onPressed: () => viewModel.incrementNumber(),
     );
   }
 }
 
-class IconButtonChangeTheme extends StatelessWidget {
-  const IconButtonChangeTheme({
-    Key? key,
-    required this.context,
-  }) : super(key: key);
-
-  final BuildContext context;
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-        onPressed: () {
-          // context.locale = LanguageManager.instance!.enLocale;
-          context.setLocale(LanguageManager.instance!.enLocale);
-        },
-        icon: const Icon(Icons.change_history));
-  }
-}
-
-class TextWelcomeWidget extends StatelessWidget {
-  const TextWelcomeWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(LocaleKeys.welcome.locale);
-  }
+extension _FormArea on _TestViewState {
+  TextFormField get mailField => TextFormField(
+        validator: (value) => value!.isValidEmail,
+      );
 }
