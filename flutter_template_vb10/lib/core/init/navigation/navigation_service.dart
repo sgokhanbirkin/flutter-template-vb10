@@ -3,25 +3,22 @@ import 'INavigation_service.dart';
 
 class NavigationService implements INavigationService {
   static final NavigationService _instance = NavigationService._init();
-  static NavigationService? get instance => _instance;
+  static NavigationService get instance => _instance;
+
   NavigationService._init();
 
-  final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
-  get removeAllOldRoutes => (Route<dynamic> route) => false;
+  GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+  // ignore: prefer_function_declarations_over_variables
+  final removeAllOldRoutes = (Route<dynamic> route) => false;
+
   @override
-  Future<void> navigateToPage(String path, Object? arguments) async {
-    await navigationKey.currentState?.pushNamed(
-      path,
-      arguments: arguments,
-    );
+  Future<void> navigateToPage({String? path, Object? data}) async {
+    await navigatorKey.currentState!.pushNamed(path!, arguments: data);
   }
 
   @override
-  Future<void> navigateToPageClear(String path, Object? arguments) async {
-    await navigationKey.currentState?.pushNamedAndRemoveUntil(
-      path,
-      removeAllOldRoutes,
-      arguments: arguments,
-    );
+  Future<void> navigateToPageClear({String? path, Object? data}) async {
+    await navigatorKey.currentState!
+        .pushNamedAndRemoveUntil(path!, removeAllOldRoutes, arguments: data);
   }
 }

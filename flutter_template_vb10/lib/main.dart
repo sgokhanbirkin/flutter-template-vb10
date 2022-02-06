@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       theme: Provider.of<ThemeNotifier>(context, listen: false).currentTheme,
       home: const TestView(),
       onGenerateRoute: NavigationRoute.instance?.generateRoute,
-      navigatorKey: NavigationService.instance!.navigationKey,
+      navigatorKey: NavigationService.instance.navigatorKey,
     );
   }
 }
